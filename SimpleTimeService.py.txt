@@ -1,0 +1,20 @@
+from http.server import SimpleHTTPRequestHandler, HTTPServer
+from datetime import datetime
+import json
+
+class SimpleTimeServiceHandler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        visitor_ip = self.client_address[0]
+        response_data = {
+            "timestamp": timestamp,
+            "ip": visitor_ip
+        }
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps(response_data).encode())
+
+httpd = HTTPServer(('localhost', 8080), SimpleTimeServiceHandler)
+print("Server running at http://localhost:8080/")
+httpd.serve_forever()
